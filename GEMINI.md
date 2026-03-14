@@ -6,7 +6,7 @@ HexVerse is a modern web application that integrates traditional Chinese divinat
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router, TypeScript)
 - **AI Integration:** [Vercel AI SDK](https://sdk.vercel.ai/docs) (utilizing `@ai-sdk/openai` and `ai` packages)
-- **AI Model Provider:** Volcengine (火山引擎) - Doubao Models
+- **AI Model Provider:** Zhipu AI (智谱 AI) - GLM-4 Models
 - **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
 - **UI Components:** [Radix UI](https://www.radix-ui.com/) / [Shadcn UI](https://ui.shadcn.com/)
 - **Icons:** [Lucide React](https://lucide.dev/)
@@ -52,9 +52,9 @@ The project follows the Next.js App Router structure with localized logic for di
 
 ### Environment Variables
 Create a `.env` file based on `env.example`:
-- `V3_VOLCE_API_KEY`: Your Volcengine API key.
-- `V3_VOLCE_API_URL`: The base URL for the Volcengine API.
-- `V3_VOLCE_MODEL`: The specific model ID to use (e.g., Doubao-pro-32k).
+- `ZHIPU_API_KEY`: Your Zhipu AI API key.
+- `ZHIPU_API_URL`: The base URL for the Zhipu AI API (default: https://open.bigmodel.cn/api/paas/v4/).
+- `ZHIPU_MODEL`: The specific model ID to use (e.g., glm-4.7-flash).
 
 ## Development Conventions
 
