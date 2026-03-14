@@ -35,8 +35,13 @@ export default function AIConfigModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" title="AI 设置">
-          <Settings className="h-[1.2rem] w-[1.2rem] text-muted-foreground" />
+        <Button
+          variant="ghost"
+          className="w-11 h-11"
+          title="AI 设置"
+          aria-label="AI 设置"
+        >
+          <Settings className="h-5 w-5 text-muted-foreground" />
           <span className="sr-only">AI 设置</span>
         </Button>
       </DialogTrigger>

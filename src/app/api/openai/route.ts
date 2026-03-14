@@ -12,10 +12,69 @@ const defaultModel = process.env.ZHIPU_MODEL || "glm-4-flash";
 // 最大响应时长 (秒)
 export const maxDuration = 60;
 
+// Helper function to categorize and format errors
+function formatError(error: unknown): { message: string; status: number } {
+  const err = error as Error & { status?: number; cause?: { code?: string } };
+
+  // Network errors
+  if (err.cause?.code === "ECONNREFUSED" || err.message.includes("fetch failed")) {
+    return { message: "无法连接到AI服务，请检查网络连接后重试。", status: 503 };
+  }
+
+  // Rate limiting
+  if (err.message.includes("rate_limit") || err.message.includes("429")) {
+    return { message: "请求过于频繁，请稍后再试。", status: 429 };
+  }
+
+  // Authentication errors
+  if (err.message.includes("401") || err.message.includes("authentication") || err.message.includes("API key")) {
+    return { message: "API密钥无效或已过期，请检查配置。", status: 401 };
+  }
+
+  // Permission errors
+  if (err.message.includes("403") || err.message.includes("permission")) {
+    return { message: "没有权限访问该资源，请检查API权限。", status: 403 };
+  }
+
+  // Not found
+  if (err.message.includes("404") || err.message.includes("model not found")) {
+    return { message: "指定的AI模型不存在，请检查模型名称。", status: 404 };
+  }
+
+  // Bad request
+  if (err.message.includes("400") || err.message.includes("bad request")) {
+    return { message: "请求参数有误，请稍后重试。", status: 400 };
+  }
+
+  // Server errors
+  if (err.message.includes("500") || err.message.includes("internal server error")) {
+    return { message: "AI服务暂时不可用，请稍后再试。", status: 500 };
+  }
+
+  // Default
+  return { message: err.message || "发生未知错误，请稍后重试。", status: 500 };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { prompt, aiConfig } = await request.json();
     let modelInstance: any;
+
+    // Validate prompt
+    if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
+      return NextResponse.json(
+        { error: "请提供有效的查询内容。" },
+        { status: 400 },
+      );
+    }
+
+    // Limit prompt length to prevent abuse
+    if (prompt.length > 10000) {
+      return NextResponse.json(
+        { error: "查询内容过长，请简化后重试。" },
+        { status: 400 },
+      );
+    }
 
     // 解析前端传递的配置
     const provider = aiConfig?.provider || "default";
@@ -65,11 +124,12 @@ export async function POST(request: NextRequest) {
     });
 
     return result.toDataStreamResponse();
-  } catch (error: any) {
+  } catch (error) {
     console.error("API Route Error:", error);
+    const { message, status } = formatError(error);
     return NextResponse.json(
-      { error: error?.message || "Internal server error" },
-      { status: 500 },
+      { error: message },
+      { status },
     );
   }
 }

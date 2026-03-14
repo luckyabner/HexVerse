@@ -3,40 +3,35 @@ import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 py-12 md:py-24">
+    <main id="main-content" className="container mx-auto px-4 py-12 md:py-24">
       {/* 英雄区域 */}
-      <section className="mb-20 text-center">
-        <h1 className="mb-6 text-5xl font-bold tracking-tight md:text-7xl">
-          <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent">
-            Hex
-          </span>
+      <section className="mb-12 text-center md:mb-20">
+        <h1 className="mb-4 text-4xl font-semibold tracking-tight md:mb-6 md:text-7xl">
+          <span className="text-primary">Hex</span>
           <span>Verse</span>
         </h1>
-        <p className="text-muted-foreground mx-auto max-w-2xl text-lg md:text-xl">
+        <p className="text-muted-foreground mx-auto max-w-2xl text-base md:text-xl">
           融合传统周易智慧与现代AI分析，为您提供直观、精准的占卜与命理服务。
         </p>
       </section>
 
       {/* 功能卡片网格 */}
       <section className="mx-auto max-w-5xl">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3 md:gap-6">
           {features.map((feature, index) => (
             <Link href={feature.href} key={index} className="group outline-none">
-              <div className="border-border bg-card/50 hover:border-primary/50 relative flex h-full flex-col overflow-hidden rounded-2xl border p-8 shadow-sm transition-all duration-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary">
-                {/* 悬浮渐变背景 */}
-                <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-                
-                <div className="bg-primary/10 text-primary mb-6 flex h-14 w-14 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110">
+              <div className="border-border bg-card/50 hover:border-primary/40 relative flex h-full flex-col overflow-hidden rounded-xl border p-5 transition-colors focus-visible:ring-2 focus-visible:ring-primary md:rounded-2xl md:p-8">
+                <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-lg transition-colors duration-200 group-hover:bg-primary/15 md:mb-6 md:h-14 md:w-14 md:rounded-xl">
                   {feature.icon}
                 </div>
-                
-                <h3 className="mb-3 text-2xl font-semibold tracking-tight">{feature.title}</h3>
-                <p className="text-muted-foreground mb-8 flex-grow leading-relaxed">
+
+                <h3 className="mb-2 text-xl font-medium tracking-tight md:mb-3 md:text-2xl">{feature.title}</h3>
+                <p className="text-muted-foreground mb-6 flex-grow leading-relaxed md:mb-8">
                   {feature.description}
                 </p>
-                
-                <div className="text-primary mt-auto flex items-center font-medium opacity-80 transition-opacity group-hover:opacity-100">
-                  立即体验 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+
+                <div className="text-primary mt-auto flex items-center text-sm font-medium opacity-70 transition-opacity group-hover:opacity-100">
+                  立即体验 <ArrowRight className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 md:ml-2" />
                 </div>
               </div>
             </Link>
@@ -55,6 +50,7 @@ const features = [
     href: "/yao",
     icon: (
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="28"
         height="28"
@@ -75,6 +71,7 @@ const features = [
     href: "/ren",
     icon: (
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="28"
         height="28"
@@ -96,6 +93,7 @@ const features = [
     href: "/fortune",
     icon: (
       <svg
+        aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="28"
         height="28"

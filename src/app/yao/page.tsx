@@ -30,13 +30,11 @@ export default function DivinationPage() {
     hexagramNow || results.length > 0 || manualValues.some((v) => v);
 
   return (
-    <main className="container mx-auto max-w-4xl px-4 py-8 md:py-12 space-y-8">
+    <main id="main-content" className="container mx-auto max-w-4xl px-4 py-8 md:py-12 space-y-8">
       {/* 标题区域 */}
       <div className="text-center space-y-3 mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent">
-            六爻
-          </span>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+          <span className="text-primary">六爻</span>
           <span>起卦</span>
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">
@@ -46,7 +44,7 @@ export default function DivinationPage() {
 
       <div className="space-y-8">
         {/* 主要内容区 - 选项卡 */}
-        <Card className="bg-card/95 border-border shadow-sm">
+        <Card className="bg-card border-border">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl font-semibold">选择起卦方式</CardTitle>
             <CardDescription>

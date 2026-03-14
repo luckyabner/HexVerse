@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import React from "react";
+import React, { memo } from "react";
 import ReactMarkdown from "react-markdown";
 
 interface FortuneAnalysisProps {
@@ -13,12 +13,12 @@ interface FortuneAnalysisProps {
   isLoading?: boolean;
 }
 
-export default function FortuneAnalysis({
+const FortuneAnalysis = memo(function FortuneAnalysis({
   result,
   isLoading = false,
 }: FortuneAnalysisProps) {
   return (
-    <Card className="bg-card/95 border-border h-full w-full shadow-md backdrop-blur-sm">
+    <Card className="bg-card border-border h-full w-full">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">命理解析</CardTitle>
         <CardDescription>基于传统命理学的个人命盘详解</CardDescription>
@@ -64,11 +64,13 @@ export default function FortuneAnalysis({
         )}
 
         {result && (
-          <div className="prose prose-slate dark:prose-invert max-w-none">
+          <div className="prose-content text-foreground leading-relaxed space-y-4">
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         )}
       </CardContent>
     </Card>
   );
-}
+});
+
+export default FortuneAnalysis;

@@ -12,7 +12,7 @@ import { LIUSHEN, LIUSHEN_EXPLANATIONS } from "../_lib/constants";
 
 export default function Explanation() {
   return (
-    <Card className="bg-card/95 border-border shadow-md backdrop-blur-sm">
+    <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">六神释义</CardTitle>
         <CardDescription>六神释义详解，帮助您理解卦象含义</CardDescription>

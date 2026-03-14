@@ -25,7 +25,7 @@ const AIExplain: React.FC<AiExplainProps> = ({
   } = useAIAnalysis(hexagramNow, hexagramFuture);
 
   return (
-    <Card className="bg-card/95 border-border shadow-md backdrop-blur-sm">
+    <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">AI解析</CardTitle>
       </CardHeader>

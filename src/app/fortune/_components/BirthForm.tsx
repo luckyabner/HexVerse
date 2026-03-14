@@ -50,7 +50,7 @@ export default function BirthForm({
   };
 
   return (
-    <Card className="bg-card/95 border-border mx-auto w-full max-w-md shadow-md backdrop-blur-sm">
+    <Card className="bg-card border-border mx-auto w-full max-w-md">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">生辰八字</CardTitle>
         <CardDescription>

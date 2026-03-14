@@ -22,7 +22,7 @@ export function AIAnalysis({
   sendMsg,
 }: AIAnalysisProps) {
   return (
-    <Card className="border-border/50 bg-card/70 shadow-sm backdrop-blur-sm">
+    <Card className="bg-card border-border">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-medium">AI分析卦象</CardTitle>
       </CardHeader>

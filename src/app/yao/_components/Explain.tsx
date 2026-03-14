@@ -22,7 +22,7 @@ const Explain: React.FC<ExplainProps> = ({ hexagramNow, hexagramFuture }) => {
 
   return (
     <>
-      <Card className="bg-card/95 border-border shadow-md backdrop-blur-sm">
+      <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">卦象</CardTitle>
         </CardHeader>

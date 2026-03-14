@@ -41,13 +41,11 @@ export default function FortunePage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 md:py-12 space-y-8">
+    <main id="main-content" className="container mx-auto px-4 py-8 md:py-12 space-y-8">
       {/* 标题区域 */}
       <div className="text-center space-y-3 mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent">
-            命理
-          </span>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+          <span className="text-primary">命理</span>
           <span>分析</span>
         </h1>
         <p className="text-muted-foreground text-sm md:text-base">

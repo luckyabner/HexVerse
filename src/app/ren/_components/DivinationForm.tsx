@@ -33,7 +33,7 @@ export function DivinationForm({
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/80 hover:bg-card/90 border-border/60 border backdrop-blur-sm transition-all">
+      <Card className="bg-card border-border">
         <div className="p-5">
           <h3 className="mb-3 text-lg font-medium">使用当下时辰起卦</h3>
           <p className="text-muted-foreground mb-4 text-sm">
@@ -60,7 +60,7 @@ export function DivinationForm({
         </div>
       </Card>
 
-      <Card className="bg-card/80 hover:bg-card/90 border-border/60 border backdrop-blur-sm transition-all">
+      <Card className="bg-card border-border">
         <div className="p-5">
           <h3 className="mb-3 text-lg font-medium">手动输入数字起卦</h3>
           <p className="text-muted-foreground mb-4 text-sm">
