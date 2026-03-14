@@ -15,8 +15,10 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body
-        className={`bg-background font-mono antialiased selection:bg-[hsl(320,65%,52%,20%)]`}
+        className={`bg-background font-mono antialiased selection:bg-[hsl(320,65%,52%,20%)] relative min-h-screen`}
       >
+        {/* Global clean background */}
+        <div className="fixed inset-0 -z-50 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background"></div>
         <NavBar />
         {children}
         <footer className="border-border/40 text-muted-foreground mt-16 border-t py-12 text-center text-sm">

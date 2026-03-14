@@ -30,46 +30,30 @@ export default function DivinationPage() {
     hexagramNow || results.length > 0 || manualValues.some((v) => v);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      {/* 全局背景元素 */}
-      <div className="bg-background fixed inset-0 -z-20">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(0,72%,65%,5%),hsl(24,62%,73%,3%),transparent_70%)] opacity-70"></div>
-        <div className="absolute h-full w-full bg-[linear-gradient(180deg,transparent,var(--background)_95%)] opacity-40"></div>
+    <main className="container mx-auto max-w-4xl px-4 py-8 md:py-12 space-y-8">
+      {/* 标题区域 */}
+      <div className="text-center space-y-3 mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent">
+            六爻
+          </span>
+          <span>起卦</span>
+        </h1>
+        <p className="text-muted-foreground text-sm md:text-base">
+          推演六爻卦象，洞察事物发展趋势
+        </p>
       </div>
 
-      {/* 装饰元素 */}
-      <div className="fixed top-0 right-0 left-0 -z-10 h-full">
-        <div className="animate-spin-slow border-primary/5 absolute top-[10%] -left-[30%] h-[60rem] w-[60rem] rounded-full border opacity-30"></div>
-        <div
-          className="animate-spin-slow border-primary/5 absolute top-[30%] -right-[40%] h-[80rem] w-[80rem] rounded-full border opacity-20"
-          style={{ animationDirection: "reverse", animationDuration: "40s" }}
-        ></div>
-      </div>
-
-      {/* 页面内容 */}
-      <div className="relative container mx-auto max-w-5xl space-y-8 py-8">
-        {/* 标题区域 */}
-        <div className="space-y-4 pt-4 text-center">
-          <h1 className="text-5xl font-bold tracking-tight">
-            <span className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent">
-              六爻
-            </span>
-            <span>起卦</span>
-          </h1>
-          <p className="text-muted-foreground mx-auto max-w-2xl">
-            源自《周易》的占卜方法，通过六爻卦象演变，推测事物发展趋势
-          </p>
-        </div>
-
+      <div className="space-y-8">
         {/* 主要内容区 - 选项卡 */}
-        <Card className="bg-card/95 border-border relative overflow-hidden shadow-md backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle>选择起卦方式</CardTitle>
+        <Card className="bg-card/95 border-border shadow-sm">
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-xl font-semibold">选择起卦方式</CardTitle>
             <CardDescription>
-              根据您的喜好选择手动投掷或自动起卦
+              根据您的喜好选择赛博投掷或手动排盘
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="max-w-2xl mx-auto">
             <Tabs defaultValue="auto" className="w-full">
               <TabsList className="mb-6 grid w-full grid-cols-2">
                 <TabsTrigger value="auto">赛博起卦</TabsTrigger>
@@ -115,7 +99,11 @@ export default function DivinationPage() {
         )}
 
         {/* 卦辞显示区域 */}
-        <Explain hexagramNow={hexagramNow} hexagramFuture={hexagramFuture} />
+        {hexagramNow && (
+          <div className="pt-4">
+            <Explain hexagramNow={hexagramNow} hexagramFuture={hexagramFuture} />
+          </div>
+        )}
       </div>
     </main>
   );
