@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React from "react";
 import ToggleTheme from "./ToggleTheme";
+import AIConfigModal from "./AIConfigModal";
 
 export default function NavBar() {
   return (
@@ -13,7 +14,10 @@ export default function NavBar() {
           <span>Verse</span>
         </Link>
 
-        <ToggleTheme />
+        <div className="flex items-center gap-2">
+          <AIConfigModal />
+          <ToggleTheme />
+        </div>
       </div>
     </header>
   );

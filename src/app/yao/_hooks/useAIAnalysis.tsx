@@ -1,12 +1,14 @@
 import { useCompletion } from "@ai-sdk/react";
 import { useState } from "react";
 import { Hexagram } from "../_lib/types";
+import { useAIConfig } from "@/hooks/useAIConfig";
 
 export default function useAIAnalysis(
   hexagramNow: Hexagram,
   hexagramFuture: Hexagram,
 ) {
   const [userQuestion, setUserQuestion] = useState("");
+  const { config: aiConfig } = useAIConfig();
 
   const { completion, isLoading, complete } = useCompletion({
     api: "/api/openai",
@@ -38,7 +40,7 @@ export default function useAIAnalysis(
     }
 
     try {
-      await complete(generatePrompt(userQuestion));
+      await complete(generatePrompt(userQuestion), { body: { aiConfig } });
     } catch (err) {
       console.error("AI解析出错:", err);
     }

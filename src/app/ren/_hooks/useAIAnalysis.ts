@@ -2,9 +2,11 @@ import { useState } from "react";
 import { DivinationResult } from "../_lib/types";
 import { useCompletion } from "@ai-sdk/react";
 import { LIUSHEN_EXPLANATIONS } from "../_lib/constants";
+import { useAIConfig } from "@/hooks/useAIConfig";
 
 export function useAIAnalysis() {
   const [userQuestion, setUserQuestion] = useState("");
+  const { config: aiConfig } = useAIConfig();
 
   const { completion, setCompletion, isLoading, complete } = useCompletion({
     api: "/api/openai",
@@ -46,7 +48,7 @@ export function useAIAnalysis() {
 `;
 
     try {
-      await complete(prompt);
+      await complete(prompt, { body: { aiConfig } });
     } catch (error) {
       console.error("AI分析失败:", error);
       setCompletion("AI分析出现错误，请稍后再试。");

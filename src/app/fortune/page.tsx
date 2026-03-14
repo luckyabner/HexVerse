@@ -3,8 +3,10 @@ import React from "react";
 import BirthForm from "./_components/BirthForm";
 import FortuneAnalysis from "./_components/FortuneAnalysis";
 import { useCompletion } from "@ai-sdk/react";
+import { useAIConfig } from "@/hooks/useAIConfig";
 
 export default function FortunePage() {
+  const { config: aiConfig } = useAIConfig();
   const { completion, isLoading, complete } = useCompletion({
     api: "/api/openai",
     onError: (error) => {
@@ -32,7 +34,7 @@ export default function FortunePage() {
       `;
 
       // 调用 complete 函数
-      await complete(prompt);
+      await complete(prompt, { body: { aiConfig } });
     } catch (err) {
       console.error("获取解析结果时出错：", err);
     }
