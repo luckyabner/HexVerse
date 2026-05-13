@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 
@@ -14,6 +15,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        <Script
+          src="https://umami.luckyabner.top/script.js"
+          data-website-id="d48a87de-eed3-4ea2-91b5-3dedbc73917f"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`bg-background font-mono antialiased selection:bg-[hsl(320,65%,52%,20%)] relative min-h-screen`}
       >
