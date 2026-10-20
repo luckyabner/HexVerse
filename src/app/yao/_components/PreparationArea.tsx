@@ -1,55 +1,47 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+const notes = [
+  {
+    title: "心诚则灵",
+    text: "起卦前静坐片刻，把注意力从杂事上收回来。",
+  },
+  {
+    title: "一事一占",
+    text: "一次只问一件事。同时问多件，卦象会互相牵扯。",
+  },
+  {
+    title: "观变玩占",
+    text: "卦象给的是结构与倾向，不是判决。决断仍在人。",
+  },
+];
 
+/** 起卦须知：右侧的窄栏注释 */
 export default function PreparationArea() {
   return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold">起卦前的准备</h3>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">心灵准备</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {[
-                { icon: "🧘", text: "找一个安静的环境" },
-                { icon: "🌟", text: "放松身心，保持平和" },
-                { icon: "💭", text: "明确你想要解答的问题" },
-              ].map((item, index) => (
-                <li
-                  key={index}
-                  className="text-muted-foreground flex items-center gap-3"
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span>{item.text}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+    <div className="md:sticky md:top-24">
+      <div className="label text-vermilion">起卦须知</div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">问题示例</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {[
-                "这个决定是否正确？",
-                "当前的方向是否合适？",
-                "如何改善目前的状况？",
-              ].map((text, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm text-purple-800">
-                    {index + 1}
-                  </span>
-                  <span className="text-muted-foreground">{text}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      <ul className="mt-5 space-y-5 border-t border-border pt-5">
+        {notes.map((note, index) => (
+          <li key={note.title} className="grid grid-cols-[1.25rem_1fr] gap-3">
+            <span className="numeral pt-0.5 text-[0.62rem] text-muted-foreground/45">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <div>
+              <div className="text-[0.85rem]">{note.title}</div>
+              <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
+                {note.text}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <p className="classic mt-8 border-t border-border pt-5 text-[0.8rem] leading-[2] text-muted-foreground/70">
+        「不诚不占，
+        <br />
+        不疑不占，
+        <br />
+        不义不占。」
+      </p>
     </div>
   );
 }

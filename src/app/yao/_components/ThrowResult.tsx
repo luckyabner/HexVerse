@@ -1,35 +1,71 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { YaoLine } from "@/components/design/HexagramLines";
+import { yaoValue } from "@/lib/hexagram";
+import { cn } from "@/lib/utils";
 
 interface ThrowResultsProps {
   results: string[];
+  isAnimating: boolean;
 }
 
-export default function ThrowResults({ results }: ThrowResultsProps) {
-  if (results.length === 0) return null;
+const POSITIONS = ["初", "二", "三", "四", "五", "上"];
 
+/** 六爻构建过程：自下而上逐步成卦 */
+export default function ThrowResults({ results, isAnimating }: ThrowResultsProps) {
   return (
-    <div className="mt-6 space-y-6">
-      <h3 className="text-center text-xl font-semibold text-slate-800">
-        投掷结果
-      </h3>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
-        {results.map((result, index) => (
-          <Card key={index}>
-            <CardHeader className="pt-4 pb-2">
-              <CardTitle className="text-sm text-purple-800">
-                第{index + 1}次
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-medium text-slate-700">
-                {result === "9" && "老阳 (9)"}
-                {result === "8" && "少阳 (8)"}
-                {result === "7" && "少阴 (7)"}
-                {result === "6" && "老阴 (6)"}
+    <div className="mt-8" aria-live="polite">
+      <div className="flex items-center justify-between">
+        <span className="label text-muted-foreground">成卦 · 自下而上</span>
+        <span className="label text-muted-foreground/50">上爻</span>
+      </div>
+
+      <div className="mt-4 border-t border-border">
+        {[5, 4, 3, 2, 1, 0].map((position) => {
+          const value = results[position];
+          const meta = value ? yaoValue(value) : null;
+          const justThrown =
+            isAnimating && !!meta && position === results.length - 1;
+
+          return (
+            <div
+              key={position}
+              className={cn(
+                "grid grid-cols-[1.5rem_1fr_auto] items-center gap-4 border-b border-border py-3 transition-colors duration-500 md:grid-cols-[2rem_1fr_auto]",
+                justThrown && "bg-vermilion/[0.05]",
+              )}
+            >
+              <span className="label text-muted-foreground/45">
+                {POSITIONS[position]}
+              </span>
+
+              <div className="flex items-center">
+                {meta ? (
+                  <YaoLine
+                    yang={meta.yang}
+                    width={112}
+                    thickness={6}
+                    moving={meta.moving}
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="block h-[6px] w-[112px] border-t border-dashed border-foreground/15"
+                  />
+                )}
               </div>
-            </CardContent>
-          </Card>
-        ))}
+
+              <span
+                className={cn(
+                  "label text-right text-[0.6rem]",
+                  meta?.moving
+                    ? "text-vermilion"
+                    : "text-muted-foreground/55",
+                )}
+              >
+                {meta ? `${meta.name} · ${meta.num}` : "—"}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

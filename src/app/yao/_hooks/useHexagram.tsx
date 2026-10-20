@@ -9,6 +9,8 @@ export interface HexagramState {
   manualValues: string[];
 }
 
+const emptyManual = () => Array(6).fill("") as string[];
+
 export default function useHexagram() {
   // 共用状态
   const [hexagramNow, setHexagramNow] = useState<string>("");
@@ -20,7 +22,7 @@ export default function useHexagram() {
   const [showPreparation, setShowPreparation] = useState(true);
 
   // 手动起卦相关状态
-  const [manualValues, setManualValues] = useState<string[]>([]);
+  const [manualValues, setManualValues] = useState<string[]>(emptyManual);
 
   // 模拟投掷一次硬币
   const throwCoins = (): string => {
@@ -53,9 +55,9 @@ export default function useHexagram() {
     setResults([]);
     const newResults: string[] = [];
 
-    // 模拟六次投掷，每次间隔0.5s
+    // 模拟六次投掷，每次间隔 0.6s
     for (let i = 0; i < 6; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 600));
       const result = throwCoins();
       newResults.push(result);
       setResults([...newResults]);
@@ -68,9 +70,11 @@ export default function useHexagram() {
 
   // 处理选择变化 (手动起卦)
   const handleSelectChange = (index: number, value: string) => {
-    const newValues = [...manualValues];
-    newValues[5 - index] = value; // 反转索引
-    setManualValues(newValues);
+    setManualValues((prev) => {
+      const next = prev.length === 6 ? [...prev] : emptyManual();
+      next[index] = value;
+      return next;
+    });
   };
 
   // 处理手动起卦生成
@@ -112,7 +116,7 @@ export default function useHexagram() {
   // 重置函数
   const resetDivination = () => {
     setResults([]);
-    setManualValues([]);
+    setManualValues(emptyManual());
     setHexagramNow("");
     setHexagramFuture("");
     setShowPreparation(true);

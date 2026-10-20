@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export default function ToggleTheme() {
@@ -12,7 +12,10 @@ export default function ToggleTheme() {
     if (savedTheme === "dark") {
       setTheme("dark");
       document.documentElement.classList.add("dark");
-    } else if (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    } else if (
+      !savedTheme &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
       setTheme("dark");
       document.documentElement.classList.add("dark");
     }
@@ -25,14 +28,13 @@ export default function ToggleTheme() {
     localStorage.setItem("theme", newTheme);
   };
 
-  // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
       <button
-        className="w-11 h-11 flex items-center justify-center cursor-pointer"
-        aria-label="Toggle Theme"
+        className="flex h-8 w-8 cursor-pointer items-center justify-center"
+        aria-label="切换主题"
       >
-        <span className="sr-only">Toggle theme (loading)</span>
+        <span className="sr-only">切换主题</span>
       </button>
     );
   }
@@ -40,14 +42,17 @@ export default function ToggleTheme() {
   return (
     <button
       onClick={toggleTheme}
-      className="w-11 h-11 flex items-center justify-center cursor-pointer rounded-md transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+      className="flex h-8 cursor-pointer items-center gap-1.5 border border-transparent px-1.5 text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+      aria-label={theme === "light" ? "切换到夜间模式" : "切换到日间模式"}
       aria-pressed={theme === "dark"}
+      title={theme === "light" ? "日间 / 夜间" : "夜间 / 日间"}
     >
-      {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-      <span className="sr-only">
-        {theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-      </span>
+      {theme === "light" ? (
+        <Sun className="h-4 w-4" strokeWidth={1.5} />
+      ) : (
+        <Moon className="h-4 w-4" strokeWidth={1.5} />
+      )}
+      <span className="label hidden text-[0.6rem] sm:inline">{theme === "light" ? "日" : "夜"}</span>
     </button>
   );
 }

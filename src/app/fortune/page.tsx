@@ -1,16 +1,16 @@
 "use client";
-import React from "react";
 import BirthForm from "./_components/BirthForm";
 import FortuneAnalysis from "./_components/FortuneAnalysis";
 import { useCompletion } from "@ai-sdk/react";
 import { useAIConfig } from "@/hooks/useAIConfig";
+import { PageHeader } from "@/components/design/PageHeader";
 
 export default function FortunePage() {
   const { config: aiConfig } = useAIConfig();
-  const { completion, isLoading, complete } = useCompletion({
+  const { completion, isLoading, complete, error } = useCompletion({
     api: "/api/openai",
-    onError: (error) => {
-      console.error(error.message);
+    onError: (err) => {
+      console.error(err.message);
     },
   });
 
@@ -33,7 +33,6 @@ export default function FortunePage() {
         请以markdown格式输出（不要用代码块包裹），并分段落组织内容。
       `;
 
-      // 调用 complete 函数
       await complete(prompt, { body: { aiConfig } });
     } catch (err) {
       console.error("获取解析结果时出错：", err);
@@ -41,22 +40,29 @@ export default function FortunePage() {
   };
 
   return (
-    <main id="main-content" className="container mx-auto px-4 py-8 md:py-12 space-y-8">
-      {/* 标题区域 */}
-      <div className="text-center space-y-3 mb-8">
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
-          <span className="text-primary">命理</span>
-          <span>分析</span>
-        </h1>
-        <p className="text-muted-foreground text-sm md:text-base">
-          揭示先天禀赋与人生轨迹
-        </p>
-      </div>
+    <main
+      id="main-content"
+      className="mx-auto w-full max-w-6xl px-5 pb-24 md:px-8"
+    >
+      <PageHeader
+        index="叁"
+        title="命理分析"
+        en="BAZI / 四柱推命"
+        meta="年 · 月 · 日 · 时"
+        subtitle="以出生时刻立四柱，观五行生克与十神配置，推演禀赋、性情与运势的长期结构。"
+      />
 
-      {/* 内容区域 */}
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2 max-w-6xl mx-auto">
+      <div className="grid gap-14 pt-10 lg:grid-cols-[minmax(0,24rem)_1fr] lg:gap-16 lg:pt-12">
         <BirthForm onSubmit={handleFormSubmit} isLoading={isLoading} />
-        <FortuneAnalysis result={completion} isLoading={isLoading} />
+
+        <div className="min-w-0">
+          <FortuneAnalysis result={completion} isLoading={isLoading} />
+          {error ? (
+            <p className="mt-6 text-[0.8rem] text-destructive">
+              推演中断：{error.message}
+            </p>
+          ) : null}
+        </div>
       </div>
     </main>
   );

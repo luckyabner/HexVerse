@@ -39,7 +39,6 @@ export function useDivination() {
       manualNums.num2 === null ||
       manualNums.num3 === null
     ) {
-      alert("请先输入三个数");
       return;
     }
     setNums({
@@ -72,6 +71,7 @@ export function useDivination() {
 
   return {
     result,
+    nums,
     manualNums,
     setManualNums,
     setNumsByTime,

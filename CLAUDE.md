@@ -89,10 +89,18 @@ Chinese-speaking users interested in traditional divination (I Ching, Bazi, 小�
 **Clean & Minimal** - The interface should feel uncluttered, purposeful, and serene. Subtle interactions over dramatic animations. Focus on content (divination results) over decoration. Trust through clarity.
 
 ### Aesthetic Direction
-- **Style**: Minimalist SaaS aesthetic - clean typography, generous whitespace, restrained color
-- **Theme**: Light/dark mode supported; primary is purple/indigo (OKLCH 0.208) - mystical but not generic AI
-- **Font**: Monospace (already in use) for a technical, precise feel
-- **Avoid**: Generic AI look - no solid blue/purple gradients, no robotic/corporate aesthetics
+- **Style**: 「纸与墨」editorial — warm paper, ink, vermilion accents, hairline rules instead of card grids
+- **Theme**: Light = rice paper (`oklch(0.973 0.0085 86)`), Dark = warm ink (`oklch(0.179 0.008 68)`); accent is vermilion (`--vermilion`, oklch ~0.55 0.17 30), secondary jade
+- **Font**: Songti/Noto Serif SC for display + classical text (`.display`, `.classic`), PingFang for body, monospace for micro-labels and numerals (`.label`, `.numeral`)
+- **Motifs**: 朱砂印章 (Seal), hairlines, registration corners (`.corner-frame`), thin dashed ring, paper grain overlay
+- **Avoid**: Generic AI look — no blue/purple gradients, no card grids with icon heads, no rounded pill UI, no glassmorphism
+
+### Design System
+- Tokens and custom classes live in `src/app/globals.css`: `--paper`, `--ink`, `--vermilion`, `--rule`, plus `.display`, `.classic`, `.label`, `.numeral`, `.rise`, `.ink-line`, `.prose-ink`
+- Custom classes are in `@layer components`, so Tailwind utilities override them (e.g. `className="label text-[0.6rem]"` works)
+- Shared design primitives: `src/components/design/` (`HexagramLines`, `HexagramPlate`, `Seal`, `SectionLabel`, `PageHeader`, `AskField`, `Markdown`, `InkSpinner`)
+- AI/markdown output must render inside `<Markdown>` (`.prose-ink`), never raw `prose` classes
+- Theme is applied before first paint by an inline script in `src/app/layout.tsx`; keep `suppressHydrationWarning` on `<html>`
 
 ### Design Principles
 1. **Content First**: Divination results and insights are the hero. Minimize chrome and visual noise.

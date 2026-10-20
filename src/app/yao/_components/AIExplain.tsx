@@ -1,85 +1,103 @@
 "use client";
 import React from "react";
 import { Hexagram } from "../_lib/types";
-import ReactMarkdown from "react-markdown";
 import { useAIAnalysis } from "../_hooks";
+import { AskField } from "@/components/design/AskField";
+import { InkSpinner } from "@/components/design/InkSpinner";
+import { Markdown } from "@/components/design/Markdown";
+import { SectionLabel } from "@/components/design/SectionLabel";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 
 interface AiExplainProps {
   hexagramNow: Hexagram;
   hexagramFuture: Hexagram;
+  question: string;
+  setQuestion: (value: string) => void;
 }
 
 const AIExplain: React.FC<AiExplainProps> = ({
   hexagramNow,
   hexagramFuture,
+  question,
+  setQuestion,
 }) => {
-  const {
-    userQuestion,
-    setUserQuestion,
-    completion,
-    isLoading,
-    handleAiExplain,
-  } = useAIAnalysis(hexagramNow, hexagramFuture);
+  const { completion, isLoading, handleAiExplain, error } = useAIAnalysis(
+    hexagramNow,
+    hexagramFuture,
+    question,
+  );
 
   return (
-    <Card className="bg-card border-border">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">AI解析</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Textarea
-          className="h-24 w-full resize-none"
-          placeholder="请输入您想问的问题，让AI帮您解析六爻卦象的意义..."
-          value={userQuestion}
-          onChange={(e) => setUserQuestion(e.target.value)}
-          disabled={isLoading}
-        />
+    <section>
+      <SectionLabel index="解" rule>
+        AI 解析
+      </SectionLabel>
 
-        <Button
-          className="w-full"
-          onClick={handleAiExplain}
-          disabled={isLoading}
-          variant={isLoading ? "outline" : "default"}
-        >
-          {isLoading ? (
-            <>
-              <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              正在解析...
-            </>
-          ) : (
-            "获取AI解析"
+      <div className="mt-8 grid gap-10 md:grid-cols-[15rem_1fr] md:gap-14">
+        <div className="md:sticky md:top-24 md:self-start">
+          <p className="text-[0.85rem] leading-relaxed text-muted-foreground">
+            卦象给出结构，模型依据卦辞与动爻，把你的问题放回这个结构里解释。
+          </p>
+          <p className="label mt-5 text-muted-foreground/50">
+            生成内容仅供参考
+          </p>
+        </div>
+
+        <div className="min-w-0">
+          {!completion && !isLoading && (
+            <AskField
+              id="ai-question"
+              value={question}
+              onChange={setQuestion}
+              onSubmit={handleAiExplain}
+              cta="解卦"
+              placeholder="你此刻最想问的是什么？"
+            />
           )}
-        </Button>
 
-        {/* AI解析结果 */}
-        {completion && (
-          <div className="mt-6 space-y-4">
-            <h3 className="text-lg font-medium">解析结果</h3>
-            <div className="bg-primary/5 prose prose-slate max-w-none rounded-lg p-4">
-              <ReactMarkdown>{completion}</ReactMarkdown>
+          {isLoading && !completion && (
+            <div className="flex items-center gap-3 border-y border-border py-10">
+              <InkSpinner className="h-4 w-4 text-vermilion" />
+              <span className="label text-muted-foreground">
+                正在依据卦辞推演
+              </span>
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+
+          {completion && (
+            <div className="space-y-6">
+              <blockquote className="border-l border-vermilion/50 pl-4">
+                <div className="label text-muted-foreground/50">所问</div>
+                <p className="classic mt-1.5 text-[0.95rem] leading-relaxed">
+                  {question}
+                </p>
+              </blockquote>
+
+              <Markdown streaming={isLoading}>{completion}</Markdown>
+
+              {error ? (
+                <p className="text-[0.8rem] text-destructive">
+                  解析中断：{error.message}
+                </p>
+              ) : null}
+
+              {!isLoading && (
+                <div className="flex justify-end pt-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAiExplain}
+                    className="label text-muted-foreground hover:text-foreground"
+                  >
+                    重新推演
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 };
 

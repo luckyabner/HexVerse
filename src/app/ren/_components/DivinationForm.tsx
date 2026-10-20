@@ -1,8 +1,8 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ManualNums } from "../_lib/types";
-import { Card } from "@/components/ui/card";
 
 interface DivinationFormProps {
   manualNums: ManualNums;
@@ -11,116 +11,146 @@ interface DivinationFormProps {
   setNumsManually: () => void;
 }
 
+const SHICHEN = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+
+function shichenOf(hour: number) {
+  const index = Math.floor(((hour + 1) % 24) / 2);
+  return {
+    name: SHICHEN[index],
+    range: `${(index * 2 + 23) % 24} — ${(index * 2 + 1) % 24}`,
+  };
+}
+
 export function DivinationForm({
   manualNums,
   setManualNums,
   setNumsByTime,
   setNumsManually,
 }: DivinationFormProps) {
+  const [clock, setClock] = useState<{ time: string; shichen: string; range: string } | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const beijing = new Date(
+        now.getTime() + (now.getTimezoneOffset() + 480) * 60000,
+      );
+      const hour = beijing.getHours();
+      const shichen = shichenOf(hour);
+      setClock({
+        time: `${String(hour).padStart(2, "0")}:${String(beijing.getMinutes()).padStart(2, "0")}`,
+        shichen: shichen.name,
+        range: shichen.range,
+      });
+    };
+
+    update();
+    const timer = setInterval(update, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleNumChange = (field: keyof ManualNums, value: string) => {
-    const parsedValue = parseInt(value) || null;
+    const parsed = parseInt(value, 10);
+    const bounded = Number.isNaN(parsed) ? null : Math.min(99, Math.max(0, parsed));
     setManualNums((prev) => ({
       ...prev,
-      [field]: parsedValue,
+      [field]: bounded,
     }));
   };
 
-  // 检查是否所有数字都已填写
   const isManualComplete =
-    manualNums.num1 != null &&
-    manualNums.num2 != null &&
-    manualNums.num3 != null;
+    manualNums.num1 !== null &&
+    manualNums.num2 !== null &&
+    manualNums.num3 !== null;
+
+  const fields: { key: keyof ManualNums; label: string }[] = [
+    { key: "num1", label: "第一数" },
+    { key: "num2", label: "第二数" },
+    { key: "num3", label: "第三数" },
+  ];
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-card border-border">
-        <div className="p-5">
-          <h3 className="mb-3 text-lg font-medium">使用当下时辰起卦</h3>
-          <p className="text-muted-foreground mb-4 text-sm">
-            根据当前的时间自动计算卦象，适合需要即时答案的情况。
-          </p>
-          <Button onClick={setNumsByTime} className="w-full" size="lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-2"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 6v6l4 2" />
-            </svg>
-            时辰起卦
-          </Button>
-        </div>
-      </Card>
-
-      <Card className="bg-card border-border">
-        <div className="p-5">
-          <h3 className="mb-3 text-lg font-medium">手动输入数字起卦</h3>
-          <p className="text-muted-foreground mb-4 text-sm">
-            请输入三个1-99之间的数字，用于起卦。可以是个人偏好的数字、随机数字或有特殊含义的数字。
-          </p>
-          <div className="mb-5 flex flex-wrap gap-3">
-            {[
-              { key: "num1", label: "第一个数" },
-              { key: "num2", label: "第二个数" },
-              { key: "num3", label: "第三个数" },
-            ].map((item) => (
-              <div key={item.key} className="space-y-1">
-                <label
-                  htmlFor={item.key}
-                  className="text-muted-foreground text-xs"
-                >
-                  {item.label}
-                </label>
-                <Input
-                  id={item.key}
-                  type="number"
-                  min="1"
-                  max="99"
-                  placeholder="1-99"
-                  value={manualNums[item.key as keyof ManualNums] || ""}
-                  onChange={(e) =>
-                    handleNumChange(
-                      item.key as keyof ManualNums,
-                      e.target.value,
-                    )
-                  }
-                  className="bg-background/80 w-24"
-                />
-              </div>
-            ))}
+    <div>
+      {/* 以时起课 */}
+      <div className="flex flex-col gap-6 border-y border-border py-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="label text-muted-foreground/55">
+            此刻 · 北京时间 · {clock ? `${clock.shichen}时` : "—"}
           </div>
-          <Button
-            onClick={setNumsManually}
-            variant="outline"
-            className="w-full"
-            disabled={!isManualComplete}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-2"
-            >
-              <path d="M17 11l-5-5-5 5M17 18l-5-5-5 5" />
-            </svg>
-            手动起卦
-          </Button>
+          <div className="mt-3 flex items-baseline gap-3">
+            <span className="numeral text-[2.6rem] leading-none tracking-tight">
+              {clock ? clock.time : "--:--"}
+            </span>
+            <span className="label text-muted-foreground/50">
+              {clock ? clock.range : ""}
+            </span>
+          </div>
         </div>
-      </Card>
+
+        <Button size="lg" onClick={setNumsByTime} className="h-12 px-7">
+          以此刻起课
+        </Button>
+      </div>
+
+      {/* 三数成局 */}
+      <div className="mt-10">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="display text-[1.15rem]">三数成局</h3>
+          <p className="label text-muted-foreground/45">1 — 99</p>
+        </div>
+        <p className="mt-2 text-[0.82rem] leading-relaxed text-muted-foreground">
+          心中默念所问，随口报出三个数字。可以是日期、时刻，或任何此刻浮现的数。
+        </p>
+
+        <div className="mt-6 grid grid-cols-3 gap-px bg-border">
+          {fields.map((field, index) => (
+            <div
+              key={field.key}
+              className="bg-background px-3 py-4 transition-colors focus-within:bg-accent/30 sm:px-5 sm:py-5"
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <label
+                  htmlFor={`ren-${field.key}`}
+                  className="label text-muted-foreground/50"
+                >
+                  {field.label}
+                </label>
+                <span className="label text-[0.6rem] text-muted-foreground/25">
+                  {["壹", "贰", "叁"][index]}
+                </span>
+              </div>
+              <input
+                id={`ren-${field.key}`}
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={99}
+                placeholder="—"
+                value={manualNums[field.key] ?? ""}
+                onChange={(event) => handleNumChange(field.key, event.target.value)}
+                className="numeral mt-3 w-full bg-transparent text-center text-[2.2rem] leading-none outline-none placeholder:text-muted-foreground/25 sm:text-[2.6rem]"
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={setNumsManually}
+            disabled={!isManualComplete}
+            className="h-12 px-7"
+          >
+            三数成局
+          </Button>
+          <p className="label text-muted-foreground/45">
+            {isManualComplete ? "三数已具 · 可以成局" : "请先报出三个数"}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

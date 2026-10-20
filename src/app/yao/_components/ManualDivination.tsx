@@ -1,19 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { yaoName, YAO_VALUES } from "@/lib/hexagram";
+import { cn } from "@/lib/utils";
 
 interface ManualDivinationProps {
   manualValues: string[];
@@ -21,102 +8,102 @@ interface ManualDivinationProps {
   onGenerate: () => void;
 }
 
+const VALUES = ["6", "7", "8", "9"] as const;
+const POSITIONS = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"];
+
 export default function ManualDivination({
   manualValues,
   onSelectChange,
   onGenerate,
 }: ManualDivinationProps) {
+  const complete = manualValues.length === 6 && manualValues.every(Boolean);
+
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">投掷规则</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="font-bold">•</span>
-                同时投掷三枚硬币
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-bold">•</span>
-                面额朝上为正面(3分)，反面为2分
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-bold">•</span>
-                记录每次投掷的总分数
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">分数对照表</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex items-center justify-between rounded-md bg-slate-50 p-2">
-              <span className="text-slate-700">三枚正面 (9分)</span>
-              <span className="font-medium">老阳 (9)</span>
+    <div>
+      <p className="mt-4 text-[0.85rem] leading-relaxed text-muted-foreground">
+        依序记录六次投掷。自下而上，第一次投掷为初爻。
+      </p>
+
+      <div className="mt-6 border-t border-border">
+        {[5, 4, 3, 2, 1, 0].map((position) => {
+          const selected = manualValues[position] || "";
+          const meta = selected ? YAO_VALUES[selected] : null;
+
+          return (
+            <div
+              key={position}
+              className="grid grid-cols-[2.75rem_1fr] items-center gap-4 border-b border-border py-3 md:grid-cols-[4.5rem_1fr] md:gap-6 md:py-3.5"
+            >
+              <div>
+                <div className="text-[0.8rem]">{POSITIONS[position]}</div>
+                <div className="label mt-1 text-[0.6rem] text-muted-foreground/50">
+                  {meta ? yaoName(position, meta.yang) : "未定"}
+                </div>
+              </div>
+
+              <div
+                role="radiogroup"
+                aria-label={POSITIONS[position]}
+                className="grid grid-cols-4 gap-px bg-border"
+              >
+                {VALUES.map((value) => {
+                  const option = YAO_VALUES[value];
+                  const isActive = selected === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => onSelectChange(position, value)}
+                      className={cn(
+                        "flex cursor-pointer flex-col items-center gap-1 px-1 py-2 transition-colors",
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background text-muted-foreground hover:bg-accent hover:text-foreground",
+                      )}
+                    >
+                      <span className="flex items-baseline gap-1.5">
+                        <span className="text-[0.8rem]">{option.name}</span>
+                        <span
+                          className={cn(
+                            "numeral text-[0.6rem]",
+                            isActive ? "opacity-55" : "opacity-35",
+                          )}
+                        >
+                          {value}
+                        </span>
+                      </span>
+                      <span
+                        className={cn(
+                          "label text-[0.6rem] tracking-[0.1em]",
+                          isActive ? "opacity-45" : "opacity-35",
+                        )}
+                      >
+                        {option.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="flex items-center justify-between rounded-md bg-slate-50 p-2">
-              <span className="text-slate-700">两正一反 (8分)</span>
-              <span className="font-medium">少阳 (8)</span>
-            </div>
-            <div className="flex items-center justify-between rounded-md bg-slate-50 p-2">
-              <span className="text-slate-700">两反一正 (7分)</span>
-              <span className="font-medium">少阴 (7)</span>
-            </div>
-            <div className="flex items-center justify-between rounded-md bg-slate-50 p-2">
-              <span className="text-slate-700">三枚反面 (6分)</span>
-              <span className="font-medium">老阴 (6)</span>
-            </div>
-          </CardContent>
-        </Card>
+          );
+        })}
       </div>
 
-      {/* 手动投掷结果输入区 */}
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>记录结果</CardTitle>
-          <CardDescription>请输入六次投掷的结果</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[5, 4, 3, 2, 1, 0].map((index) => (
-              <div key={index} className="space-y-2">
-                <Label className="text-muted-foreground text-sm font-medium">
-                  第{6 - index}次投掷
-                </Label>
-                <Select
-                  value={manualValues[5 - index] || ""}
-                  onValueChange={(value) => onSelectChange(index, value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="请选择..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="9">三正-老阳 (9分)</SelectItem>
-                    <SelectItem value="8">两正一反-少阳 (8分)</SelectItem>
-                    <SelectItem value="7">两反一正-少阴 (7分)</SelectItem>
-                    <SelectItem value="6">三反-老阴 (6分)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 flex justify-center">
-            <Button
-              onClick={onGenerate}
-              disabled={
-                manualValues.length !== 6 || manualValues.some((v) => !v)
-              }
-            >
-              生成卦象
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <Button
+          size="lg"
+          onClick={onGenerate}
+          disabled={!complete}
+          className="h-12 px-8 text-[0.92rem]"
+        >
+          成卦
+        </Button>
+        <p className="label text-muted-foreground/45">
+          {complete ? "六爻已定 · 可以成卦" : "尚有爻位未定"}
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Settings } from "lucide-react";
 import {
   Dialog,
@@ -11,10 +11,22 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useAIConfig, AIProvider, AIConfig } from "@/hooks/useAIConfig";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { cn } from "@/lib/utils";
+
+const PROVIDERS: { value: AIProvider; name: string; note: string }[] = [
+  { value: "default", name: "智谱 GLM", note: "系统默认" },
+  { value: "openai", name: "OpenAI 兼容", note: "gpt-4o-mini" },
+  { value: "claude", name: "Claude", note: "Anthropic" },
+  { value: "custom", name: "自定义", note: "任意兼容接口" },
+];
+
+const placeholders: Record<Exclude<AIProvider, "default">, { baseUrl: string; model: string }> = {
+  openai: { baseUrl: "https://api.openai.com/v1", model: "gpt-4o-mini" },
+  claude: { baseUrl: "https://api.anthropic.com", model: "claude-3-5-sonnet-20240620" },
+  custom: { baseUrl: "https://your-api.com/v1", model: "model-id" },
+};
 
 export default function AIConfigModal() {
   const { config, saveConfig, mounted } = useAIConfig();
@@ -32,110 +44,140 @@ export default function AIConfigModal() {
 
   if (!mounted) return null;
 
+  const provider = localConfig.provider;
+  const hints = provider === "default" ? null : placeholders[provider];
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="w-11 h-11"
-          title="AI 设置"
-          aria-label="AI 设置"
+          className="h-8 w-8 px-0 text-muted-foreground hover:text-foreground"
+          title="AI 接口设置"
+          aria-label="AI 接口设置"
         >
-          <Settings className="h-5 w-5 text-muted-foreground" />
-          <span className="sr-only">AI 设置</span>
+          <Settings className="h-4 w-4" strokeWidth={1.5} />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>自定义 AI 配置</DialogTitle>
-          <DialogDescription>
-            您可以自定义用于解卦和分析的 AI 模型接口。配置将保存在本地浏览器中。
+
+      <DialogContent className="corner-frame sm:max-w-[440px]">
+        <DialogHeader className="gap-2">
+          <span className="label text-vermilion">AI 接口</span>
+          <DialogTitle className="display text-[1.55rem] leading-none font-normal">
+            模型配置
+          </DialogTitle>
+          <DialogDescription className="text-[0.8rem] leading-relaxed text-muted-foreground">
+            选择用于解卦与命理分析的模型，配置仅保存在本机浏览器。
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="provider" className="text-right">
-              提供商
-            </Label>
-            <div className="col-span-3">
-              <Select
-                value={localConfig.provider}
-                onValueChange={(value: AIProvider) =>
-                  setLocalConfig({ ...localConfig, provider: value })
-                }
-              >
-                <SelectTrigger id="provider">
-                  <SelectValue placeholder="选择 AI 提供商" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="default">默认 (智谱 GLM-4)</SelectItem>
-                  <SelectItem value="openai">OpenAI 兼容</SelectItem>
-                  <SelectItem value="claude">Claude (Anthropic)</SelectItem>
-                  <SelectItem value="custom">自定义</SelectItem>
-                </SelectContent>
-              </Select>
+
+        <div className="space-y-6 pt-1">
+          <div>
+            <div className="label text-muted-foreground">提供商</div>
+            <div
+              role="radiogroup"
+              aria-label="AI 提供商"
+              className="mt-3 grid grid-cols-2 gap-px bg-border"
+            >
+              {PROVIDERS.map((item) => {
+                const active = provider === item.value;
+                return (
+                  <button
+                    key={item.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() =>
+                      setLocalConfig({ ...localConfig, provider: item.value })
+                    }
+                    className={cn(
+                      "flex cursor-pointer flex-col items-start gap-1 px-3.5 py-3 text-left transition-colors",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background hover:bg-accent",
+                    )}
+                  >
+                    <span className="text-[0.85rem]">{item.name}</span>
+                    <span
+                      className={cn(
+                        "label text-[0.6rem]",
+                        active
+                          ? "text-primary-foreground/45"
+                          : "text-muted-foreground/50",
+                      )}
+                    >
+                      {item.note}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {localConfig.provider === "default" ? (
-            <div className="text-sm text-muted-foreground text-center py-4 bg-muted/50 rounded-md">
-              当前使用系统默认的智谱 GLM-4 接口，无需额外配置。
-            </div>
+          {provider === "default" ? (
+            <p className="border-l border-vermilion/40 pl-4 text-[0.8rem] leading-relaxed text-muted-foreground">
+              使用系统默认的智谱 GLM 接口，无需额外配置。
+            </p>
           ) : (
-            <>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="apiKey" className="text-right">
+            <div className="space-y-5">
+              <div>
+                <label htmlFor="apiKey" className="label text-muted-foreground">
                   API Key
-                </Label>
+                </label>
                 <Input
                   id="apiKey"
                   type="password"
-                  placeholder="sk-..."
-                  className="col-span-3"
+                  placeholder="sk-…"
+                  className="mt-1"
                   value={localConfig.apiKey}
-                  onChange={(e) => setLocalConfig({ ...localConfig, apiKey: e.target.value })}
+                  onChange={(e) =>
+                    setLocalConfig({ ...localConfig, apiKey: e.target.value })
+                  }
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="baseUrl" className="text-right">
-                  Base URL
-                </Label>
+
+              <div>
+                <div className="flex items-baseline justify-between">
+                  <label htmlFor="baseUrl" className="label text-muted-foreground">
+                    Base URL
+                  </label>
+                  <span className="label text-[0.6rem] text-muted-foreground/45">
+                    可选
+                  </span>
+                </div>
                 <Input
                   id="baseUrl"
-                  placeholder={
-                    localConfig.provider === "openai"
-                      ? "https://api.openai.com/v1"
-                      : localConfig.provider === "claude"
-                      ? "https://api.anthropic.com"
-                      : "https://your-custom-api.com/v1"
-                  }
-                  className="col-span-3"
+                  placeholder={hints?.baseUrl}
+                  className="mt-1"
                   value={localConfig.baseUrl}
-                  onChange={(e) => setLocalConfig({ ...localConfig, baseUrl: e.target.value })}
+                  onChange={(e) =>
+                    setLocalConfig({ ...localConfig, baseUrl: e.target.value })
+                  }
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="model" className="text-right">
+
+              <div>
+                <label htmlFor="model" className="label text-muted-foreground">
                   模型名称
-                </Label>
+                </label>
                 <Input
                   id="model"
-                  placeholder={
-                    localConfig.provider === "openai"
-                      ? "gpt-4o-mini"
-                      : localConfig.provider === "claude"
-                      ? "claude-3-5-sonnet-20240620"
-                      : "custom-model-id"
-                  }
-                  className="col-span-3"
+                  placeholder={hints?.model}
+                  className="mt-1"
                   value={localConfig.model}
-                  onChange={(e) => setLocalConfig({ ...localConfig, model: e.target.value })}
+                  onChange={(e) =>
+                    setLocalConfig({ ...localConfig, model: e.target.value })
+                  }
                 />
               </div>
-            </>
+            </div>
           )}
         </div>
-        <div className="flex justify-end">
+
+        <div className="flex items-center justify-between border-t border-border pt-5">
+          <span className="label text-[0.6rem] text-muted-foreground/45">
+            localStorage · hexverse_ai_config
+          </span>
           <Button onClick={handleSave}>保存配置</Button>
         </div>
       </DialogContent>

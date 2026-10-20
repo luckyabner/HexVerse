@@ -1,36 +1,27 @@
-import { useState } from "react";
 import { DivinationResult } from "../_lib/types";
 import { useCompletion } from "@ai-sdk/react";
 import { LIUSHEN_EXPLANATIONS } from "../_lib/constants";
 import { useAIConfig } from "@/hooks/useAIConfig";
 
 export function useAIAnalysis() {
-  const [userQuestion, setUserQuestion] = useState("");
   const { config: aiConfig } = useAIConfig();
 
-  const { completion, setCompletion, isLoading, complete } = useCompletion({
-    api: "/api/openai",
-    onError: (error) => {
-      console.error(error.message);
-    },
-  });
+  const { completion, setCompletion, isLoading, complete, error } =
+    useCompletion({
+      api: "/api/openai",
+      onError: (err) => {
+        console.error(err.message);
+      },
+    });
 
-  const sendMsg = async (result: DivinationResult | null) => {
-    if (!userQuestion.trim()) {
-      alert("请先输入你的问题");
-      return;
-    }
-
-    if (!result) {
-      alert("请先起卦");
-      return;
-    }
+  const sendMsg = async (result: DivinationResult | null, question: string) => {
+    if (!question.trim() || !result) return;
 
     const prompt = `
 你是一个精通小六壬的占卜专家。请分析用户的卦象并回答其问题：
 六壬解释：${JSON.stringify(LIUSHEN_EXPLANATIONS)}
 卦象信息：${JSON.stringify(result)}
-用户问题：${userQuestion}
+用户问题：${question}
 
 请根据上述小六壬卦象，提供以下分析：
 1. 卦象的整体吉凶判断及基本含义
@@ -43,29 +34,24 @@ export function useAIAnalysis() {
 - 保持分析精准、简洁、实用
 - 避免模糊或空泛的表述
 - 内容限制在300字以内
+- 直接使用 markdown 输出，不要用代码块包裹
 
 请直接开始你的分析，不需要重复问题或卦象信息。
 `;
 
     try {
       await complete(prompt, { body: { aiConfig } });
-    } catch (error) {
-      console.error("AI分析失败:", error);
-      setCompletion("AI分析出现错误，请稍后再试。");
+    } catch (err) {
+      console.error("AI分析失败:", err);
+      setCompletion("AI 分析暂时不可用，请稍后再试。");
     }
   };
 
-  const resetAIAnalysis = () => {
-    setCompletion("");
-    setUserQuestion("");
-  };
-
   return {
-    userQuestion,
-    setUserQuestion,
     completion,
+    setCompletion,
     isLoading,
     sendMsg,
-    resetAIAnalysis,
+    error,
   };
 }
