@@ -1,8 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { Seal } from "@/components/design/Seal";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f9f6f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#14110e" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "HexVerse — 周易与 AI 的推演台",
